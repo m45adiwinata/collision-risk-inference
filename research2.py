@@ -10,6 +10,7 @@ import numpy as np
 from AIS import CPA
 import CRI
 import colregs
+import fuzzy_membership as fm
 
 class Kapal:
     def __init__(self, LON, LAT, COG, SOG):
@@ -29,6 +30,8 @@ for d in data:
     
 radlat_OS, radlong_OS = kapals[0].radPoint()
 radlat_TS, radlong_TS = kapals[1].radPoint()
+
+fm.createDummyPlot()
 
 results = []
 radlatlong = []
@@ -51,6 +54,10 @@ for i in range(len(data)//2):
     level = CRI.getLevel(cri)
     Colregs = colregs.getColregs(kapals[idx].COG, kapals[idx+1].COG, kapals[idx].SOG, kapals[idx+1].SOG)
     results.append([haversine, mid_lat, mid_long, bearing, relSpeed, Q, relCourse, DCPA, TCPA, VCD, cri, level, Colregs])
+    memDCPA, lvlDCPA = CRI.getMembership(DCPA, 'dcpa')
+    memTCPA, lvlTCPA = CRI.getMembership(TCPA, 'tcpa')
+    memVCD, lvlVCD = CRI.getMembership(VCD, 'vcd')
+    memDr, lvlDr = CRI.getMembership(haversine, 'dr')
 
 results = np.array(results, dtype='object')
 

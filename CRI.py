@@ -5,6 +5,8 @@ Created on Wed May  3 20:59:40 2023
 @author: Mugen
 """
 
+from typing import Tuple
+
 def getLevel(cri) -> str:
     level = '-'
     if cri >= 1:
@@ -18,53 +20,60 @@ def getLevel(cri) -> str:
     return level
 
 def getCRI(dcpa, tcpa, vcd, dr) -> float:
-    memDCPA = getMembership(dcpa, 'dcpa')
-    memTCPA = getMembership(tcpa, 'tcpa')
-    memVCD = getMembership(vcd, 'vcd')
-    memDr = getMembership(dr, 'dr')
+    memDCPA, _ = getMembership(dcpa, 'dcpa')
+    memTCPA, _ = getMembership(tcpa, 'tcpa')
+    memVCD, _ = getMembership(vcd, 'vcd')
+    memDr, _ = getMembership(dr, 'dr')
     cri = dcpa*memDCPA + tcpa*memTCPA + vcd*memVCD + dr*memDr
     
     return cri
 
-def getMembership(val, param) -> float:
+def getMembership(val: float, param: str) -> Tuple[float, str]:
+    level = ''
     if param == 'dcpa':
         if val <= 0 or (val > 0 and val <= 1.3):
-            memb = dcpaCategory(val, 'tabrakan')
+            level = 'tabrakan'
         elif val > 1.3 and val <= 2.6:
-            memb = dcpaCategory(val, 'bahaya')
+            level = 'bahaya'
         elif val > 2.6 and val <= 3.9:
-            memb = dcpaCategory(val, 'ancaman')
+            level = 'ancaman'
         elif val > 3.9:
-            memb = dcpaCategory(val, 'waspada')
+            level = 'waspada'
+        memb = dcpaCategory(val, level)
     if param == 'tcpa':
-        if val <= 0 or (val > 0 and val <= 11.5):
-            memb = tcpaCategory(val, 'tabrakan')
+        if val <= 11.5:
+            level = 'tabrakan'
         elif val > 11.5 and val <= 22.9:
-            memb = tcpaCategory(val, 'bahaya')
+            level = 'bahaya'
         elif val > 22.9 and val <= 34.3:
-            memb = tcpaCategory(val, 'ancaman')
+            level = 'ancaman'
         elif val > 34.3:
-            memb = tcpaCategory(val, 'waspada')
+            level = 'waspada'
+        memb = tcpaCategory(val, level)
     if param == 'vcd':
         if val <= 0 or (val > 0 and val <= 30):
-            memb = vcdCategory(val, 'tabrakan')
+            level = 'tabrakan'
         elif val > 30 and val <= 50.2:
-            memb = vcdCategory(val, 'bahaya')
+            level = 'bahaya'
         elif val > 50.2 and val <= 70.5:
-            memb = vcdCategory(val, 'ancaman')
+            level = 'ancaman'
         elif val > 70.5:
-            memb = vcdCategory(val, 'waspada')
+            level = 'waspada'
+        memb = vcdCategory(val, level)
     if param == 'dr':
         if val <= 0 or (val > 0 and val <= 1.2):
-            memb = drCategory(val, 'tabrakan')
+            level = 'tabrakan'
         elif val > 1.2 and val <= 2.1:
-            memb = drCategory(val, 'bahaya')
+            level = 'bahaya'
         elif val > 2.1 and val <= 3.0:
-            memb = drCategory(val, 'ancaman')
+            level = 'ancaman'
         elif val > 3.0:
-            memb = drCategory(val, 'waspada')
-    
-    return memb
+            level = 'waspada'
+        memb = drCategory(val, level)
+        
+    if len(level) > 0:
+        return memb, level[0].upper()
+    return memb, level
         
 def dcpaCategory(dcpa, param) -> float:
     if param == 'tabrakan':
@@ -79,7 +88,8 @@ def dcpaCategory(dcpa, param) -> float:
     elif param == 'waspada':
         return 0
     
-def tcpaCategory(tcpa, param) -> float:
+def tcpaCategory(tcpa:float, param:str) -> float:
+    print(param)
     if param == 'tabrakan':
         if tcpa <= 0:
             return 1
